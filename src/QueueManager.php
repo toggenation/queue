@@ -3,17 +3,18 @@ declare(strict_types=1);
 
 /**
  * CakePHP(tm) : Rapid Development Framework (https://cakephp.org)
- * Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org/)
+ * Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org/).
  *
  * Licensed under The MIT License
  * For full copyright and license information, please see the LICENSE.txt
  * Redistributions of files must retain the above copyright notice.
  *
  * @copyright     Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org/)
- * @link          https://cakephp.org CakePHP(tm) Project
+ * @see          https://cakephp.org CakePHP(tm) Project
  * @since         0.1.0
  * @license       https://opensource.org/licenses/MIT MIT License
  */
+
 namespace Cake\Queue;
 
 use BadMethodCallException;
@@ -33,7 +34,7 @@ class QueueManager
     protected static $_config = [];
 
     /**
-     * Queue clients
+     * Queue clients.
      *
      * @var array
      */
@@ -70,15 +71,15 @@ class QueueManager
      * QueueManager::setConfig($arrayOfConfig);
      * ```
      *
-     * @param string|array $key The name of the configuration, or an array of multiple configs.
-     * @param array $config An array of name => configuration data for adapter.
-     * @throws \BadMethodCallException When trying to modify an existing config.
-     * @throws \LogicException When trying to store an invalid structured config array.
+     * @param  array|string            $key    the name of the configuration, or an array of multiple configs
+     * @param  array                   $config an array of name => configuration data for adapter
+     * @throws \BadMethodCallException when trying to modify an existing config
+     * @throws \LogicException         when trying to store an invalid structured config array
      * @return void
      */
     public static function setConfig($key, $config = null): void
     {
-        if ($config === null) {
+        if (null === $config) {
             if (!is_array($key)) {
                 throw new LogicException('If config is null, key must be an array.');
             }
@@ -88,34 +89,13 @@ class QueueManager
 
             return;
         }
-
         if (isset(static::$_config[$key])) {
-            /** @psalm-suppress PossiblyInvalidArgument */
+            // @psalm-suppress PossiblyInvalidArgument
             throw new BadMethodCallException(sprintf('Cannot reconfigure existing key `%s`', $key));
         }
 
         if (empty($config['url'])) {
             throw new BadMethodCallException('Must specify `url` key.');
-        }
-
-        if (!empty($config['queue'])) {
-            if (!is_array($config['url'])) {
-                $config['url'] = [
-                    'transport' => $config['url'],
-                    'client' => [
-                        'router_topic' => $config['queue'],
-                        'router_queue' => $config['queue'],
-                        'default_queue' => $config['queue'],
-                    ],
-                ];
-            } else {
-                $clientConfig = $config['url']['client'] ?? [];
-                $config['url']['client'] = $clientConfig + [
-                    'router_topic' => $config['queue'],
-                    'router_queue' => $config['queue'],
-                    'default_queue' => $config['queue'],
-                ];
-            }
         }
 
         /** @psalm-suppress InvalidPropertyAssignmentValue */
@@ -125,8 +105,8 @@ class QueueManager
     /**
      * Reads existing configuration.
      *
-     * @param string $key The name of the configuration.
-     * @return mixed Configuration data at the named key or null if the key does not exist.
+     * @param  string $key the name of the configuration
+     * @return mixed  configuration data at the named key or null if the key does not exist
      */
     public static function getConfig(string $key)
     {
@@ -136,7 +116,7 @@ class QueueManager
     /**
      * Remove a configured queue adapter.
      *
-     * @param string $key The config name to drop.
+     * @param  string $key the config name to drop
      * @return void
      */
     public static function drop(string $key): void
@@ -145,9 +125,9 @@ class QueueManager
     }
 
     /**
-     * Get a queueing engine
+     * Get a queueing engine.
      *
-     * @param string $name Key name of a configured adapter to get.
+     * @param  string                             $name key name of a configured adapter to get
      * @return \Enqueue\SimpleClient\SimpleClient
      */
     public static function engine(string $name): SimpleClient
@@ -171,26 +151,26 @@ class QueueManager
     /**
      * Push a single job onto the queue.
      *
-     * @param string|string[] $callable Either an array of [classname, method], or a string
-     *   to a statically callable function. When an array is used, the
-     *   class will be constructed by Queue\Processor and have the
-     *   named method invoked.
-     * @param array $args An array of data to set for the job.
-     * @param array $options An array of options for publishing the job:
-     *   - `config` - A queue config name. Defaults to 'default'.
-     *   - `delay` - Time (in integer seconds) to delay message, after which it
-     *      will be processed. Not all message brokers accept this. Default `null`.
-     *   - `expires` - Time (in integer seconds) after which the message expires.
-     *     The message will be removed from the queue if this time is exceeded
-     *     and it has not been consumed. Default `null`.
-     *   - `priority` - Valid values:
-     *      - `\Enqueue\Client\MessagePriority::VERY_LOW`
-     *      - `\Enqueue\Client\MessagePriority::LOW`
-     *      - `\Enqueue\Client\MessagePriority::NORMAL`
-     *      - `\Enqueue\Client\MessagePriority::HIGH`
-     *      - `\Enqueue\Client\MessagePriority::VERY_HIGH`
-     *   - `queue` - The name of a queue to use, from queue `config` array or
-     *      string 'default' if empty.
+     * @param  string|string[] $callable Either an array of [classname, method], or a string
+     *                                   to a statically callable function. When an array is used, the
+     *                                   class will be constructed by Queue\Processor and have the
+     *                                   named method invoked.
+     * @param  array           $args     an array of data to set for the job
+     * @param  array           $options  An array of options for publishing the job:
+     *                                   - `config` - A queue config name. Defaults to 'default'.
+     *                                   - `delay` - Time (in integer seconds) to delay message, after which it
+     *                                   will be processed. Not all message brokers accept this. Default `null`.
+     *                                   - `expires` - Time (in integer seconds) after which the message expires.
+     *                                   The message will be removed from the queue if this time is exceeded
+     *                                   and it has not been consumed. Default `null`.
+     *                                   - `priority` - Valid values:
+     *                                   - `\Enqueue\Client\MessagePriority::VERY_LOW`
+     *                                   - `\Enqueue\Client\MessagePriority::LOW`
+     *                                   - `\Enqueue\Client\MessagePriority::NORMAL`
+     *                                   - `\Enqueue\Client\MessagePriority::HIGH`
+     *                                   - `\Enqueue\Client\MessagePriority::VERY_HIGH`
+     *                                   - `queue` - The name of a queue to use, from queue `config` array or
+     *                                   string 'default' if empty.
      * @return void
      */
     public static function push($callable, array $args = [], array $options = []): void
